@@ -7,4 +7,4 @@ export PORT=4797
 
 source ./prod-env.sh
 
-_build/prod/rel/timesheets/bin/timesheets start
+_build/prod/rel/time2/bin/time2 start
