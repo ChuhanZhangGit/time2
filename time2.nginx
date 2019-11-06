@@ -1,0 +1,22 @@
+upstream timesheets {
+    server localhost:4797;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    # TODO: This should be your server name.
+    server_name time2.chuhandev.com;
+
+    location / {
+        proxy_pass http://timesheets;
+    }
+
+    location /socket {
+        proxy_pass http://timesheets;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";	 	 
+    }
+}
