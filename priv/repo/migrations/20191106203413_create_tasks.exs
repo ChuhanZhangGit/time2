@@ -7,7 +7,7 @@ defmodule Time2.Repo.Migrations.CreateTasks do
       add :hours, :float
       add :note, :string
 
-      # add :daysheet_id, references(:daysheets, on_delete: :nothing)
+      add :daysheet_id, references(:daysheets, on_delete: :nothing)
       add :job_id, references(:jobs, on_delete: :nothing)
       add :worker_id, references(:users, on_delete: :nothing)
 
