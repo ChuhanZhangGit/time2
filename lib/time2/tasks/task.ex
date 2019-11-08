@@ -6,9 +6,9 @@ defmodule Time2.Tasks.Task do
     field :hours, :float
     field :job_code, :string
     field :note, :string
-    field :daysheet_id, :id
     field :job_id, :id
     field :worker_id, :id
+    belongs_to :daysheet, Timesheets.Daysheets.Daysheet
 
     timestamps()
   end

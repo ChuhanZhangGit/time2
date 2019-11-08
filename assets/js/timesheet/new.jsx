@@ -5,19 +5,19 @@ import { connect } from 'react-redux';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { Redirect } from 'react-router';
 
-import { submit_new_photo } from '../ajax';
 
-export default connect(state2props)(PhotosNew);
 
 function state2props(state) {
-    return state.forms.new_photo;
+    console.log("asdfasfd", state.forms.new_timesheet)
+    return state.forms.new_timesheet;
 }
 
-class PhotosNew extends React.Component {
+class NewTimesheet extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            row_num: 8,
             redirect: null,
         }
     }
@@ -28,18 +28,36 @@ class PhotosNew extends React.Component {
 
     changed(data) {
         this.props.dispatch({
-            type: 'CHANGE_NEW_PHOTO',
+            type: 'SUBMIT_NEW_SHEET',
             data: data,
         });
     }
 
-    file_changed(ev) {
-        let input = ev.target;
-        let file = null;
-        if (input.files.length > 0) {
-            file = input.files[0];
-        }
-        this.changed({ file: file });
+    table_row(row_number) {
+        return (<tr key={row_number}>
+            <td>
+                <Form.Group controlId="job_code">
+                    <Form.Control as="textarea" rows="3"
+                        onChange={(ev) => this.changed({ [row_number]: { job_code: ev.target.value } })} />
+                </Form.Group>
+            </td>
+            <td>
+                <Form.Group controlId="hours">
+                    <Form.Control as="textarea" rows="3"
+                        onChange={(ev) => this.changed({ [row_number]: { hours: ev.target.value } })} />
+                </Form.Group>
+            </td>
+            <td>
+                <Form.Group controlId="note">
+                    <Form.Control as="textarea" rows="3"
+                        onChange={(ev) => this.changed({ [row_number]: { note: ev.target.value } })} />
+                </Form.Group>
+            </td>
+        </tr>);
+    }
+
+    add_row() {
+        this.setState({ row_num: this.state.row_num + 1 });
     }
 
     render() {
@@ -55,24 +73,37 @@ class PhotosNew extends React.Component {
 
         return (
             <div>
-                <h1>New Photo</h1>
+                <h1>New Timesheet</h1>
                 {error_msg}
-                <Form.Group controlId="upload">
-                    <Form.Label>Upload Photo</Form.Label>
-                    <Form.Control type="file" onChange={(ev) => this.file_changed(ev)} />
-                </Form.Group>
-                <Form.Group controlId="desc">
-                    <Form.Label>Description</Form.Label>
-                    <Form.Control as="textarea" rows="3"
-                        onChange={(ev) => this.changed({ desc: ev.target.value })} />
-                </Form.Group>
-                <Form.Group controlId="submit">
-                    <Button variant="primary"
-                        onClick={() => submit_new_photo(this)}>
-                        Upload Photo</Button>
-                </Form.Group>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Job Code</th>
+                            <th>Hours</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {[...Array(this.state.row_num)].map((_, i) => this.table_row(i))}
+                    </tbody>
+                    <tfoot>
+                        <p>
+                            <Button onClick={() => this.add_row()}>Add Row</Button>
+                        </p>
+                    </tfoot>
+                </table>
+
+                <p>
+                    <Form.Group controlId="submit">
+                        <Button variant="primary"
+                            onClick={() => sumbit_timesheet(this)}>
+                            Submit</Button>
+                    </Form.Group>
+                </p>
+
             </div>
         );
     }
 }
 
+export default connect(state2props)(NewTimesheet);

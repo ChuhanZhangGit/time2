@@ -7,6 +7,9 @@ defmodule Time2.Repo.Migrations.CreateUsers do
       add :email, :string
       add :name, :string
       add :manager, :string
+      
+      add :password_hash, :string, null: false
+
 
       timestamps()
     end

@@ -11,14 +11,56 @@ defmodule Time2Web.DaysheetController do
     render(conn, "index.json", daysheets: daysheets)
   end
 
+
+    def update_sheet_param(daysheet_params, current_user) do
+    daysheet_params
+    |> Map.put("manager_id", current_user.manager_id)
+    |> Map.put("worker_id", current_user.id) 
+  end
+
+  def filter_param(daysheet_params, current_user) do 
+    if (current_user.group != "manager") do 
+      daysheet_params = Map.delete(daysheet_params, "approved")
+      daysheet_params
+    else
+      daysheet_params
+    end
+  end
+
   def create(conn, %{"daysheet" => daysheet_params}) do
-    with {:ok, %Daysheet{} = daysheet} <- Daysheets.create_daysheet(daysheet_params) do
+    # current user may be undefined
+    current_user =  conn.assigns[:current_user]
+    daysheet_params = daysheet_params
+    |> update_sheet_param(current_user)
+    |> filter_param(current_user)
+
+    case Daysheets.create_daysheet(daysheet_params) do
+      {:ok, daysheet} ->
       conn
       |> put_status(:created)
       |> put_resp_header("location", Routes.daysheet_path(conn, :show, daysheet))
       |> render("show.json", daysheet: daysheet)
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "new.html", changeset: changeset)
     end
   end
+
+  # def create(conn, %{"daysheet" => daysheet_params}) do
+
+  #   # current_user may be undefined
+  #   current_user =  conn.assigns[:current_user]
+  #   daysheet_params = daysheet_params
+  #   |> update_sheet_param(current_user)
+  #   |> filter_param(current_user)
+
+  #   with {:ok, %Daysheet{} = daysheet} <- Daysheets.create_daysheet(daysheet_params) do
+  #     conn
+  #     |> put_status(:created)
+  #     |> put_resp_header("location", Routes.daysheet_path(conn, :show, daysheet))
+  #     |> render("show.json", daysheet: daysheet)
+  #   end
+  # end
 
   def show(conn, %{"id" => id}) do
     daysheet = Daysheets.get_daysheet!(id)
