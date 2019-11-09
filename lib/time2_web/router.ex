@@ -18,6 +18,8 @@ defmodule Time2Web.Router do
 
   scope "/ajax", Time2Web do
     pipe_through :ajax
+    get "/", PageController, :index
+
     resources "/users", UserController, except: [:new, :edit]
     resources "/daysheets", DaysheetController, except: [:new, :edit]
 

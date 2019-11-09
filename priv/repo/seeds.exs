@@ -25,10 +25,9 @@ Repo.insert!(%User{id: 2, group: "worker", manager_id: 1, name: "Bob", email: "b
 Repo.insert!(%User{id: 3, group: "worker", manager_id: 1, name: "Carol Anderson", email: "carol@example.com", password_hash: worker_pw})
 Repo.insert!(%User{id: 4, group: "worker", manager_id: 5, name: "Dave Anderson", email: "dave@example.com", password_hash: worker_pw})
 
-Repo.insert!(%Daysheet{id: 1, manager_id: 5, worker_id: 2, date: ~D[2000-01-01], approved: false })
 
-Repo.insert!(%Job{id: 1, jobcode: "1234", manager_id: 5, name: "test_job1", description: "new job"})
+Repo.insert!(%Job{id: 1, jobcode: "job1", manager_id: 5, name: "test_job1", description: "new job"})
 
-Repo.insert!(%Job{id: 2, jobcode: "2345", manager_id: 5, name: "test_job2", description: "new job"})
-
-Repo.insert!(%Task{note: "new note", daysheet_id: 1, job_id: 1, job_code: "1234", worker_id: 2, hours: 2.0})
+Repo.insert!(%Job{id: 2, jobcode: "job2", manager_id: 5, name: "test_job2", description: "new job"})
+Repo.insert!(%Job{id: 3, jobcode: "job3", manager_id: 1, name: "test_job1", description: "new job"})
+Repo.insert!(%Job{id: 4, jobcode: "job4", manager_id: 1, name: "test_job2", description: "new job"})

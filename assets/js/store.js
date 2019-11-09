@@ -8,6 +8,8 @@ import deepFreeze from 'deep-freeze-strict';
  *      Task 1 => {jobcode: ..., .....},
  *      Task 2 => {....},
  *       ....
+ *      date: {
+ *              ...}
  *   },
  *     new_user: {...},
  *     edit_user: {...},
@@ -32,19 +34,6 @@ import deepFreeze from 'deep-freeze-strict';
  * }
  */
 
-function photos(st0 = new Map(), action) {
-  switch (action.type) {
-    case 'ADD_PHOTOS':
-      let st1 = new Map(st0);
-      for (let photo of action.data) {
-        st1.set(photo.id, photo);
-      }
-      return st1;
-    default:
-      return st0;
-  }
-}
-
 function timesheets(st0 = new Map(), action) {
   switch (action.type) {
     case 'ADD_NEW_SHEET':
@@ -58,16 +47,42 @@ function timesheets(st0 = new Map(), action) {
   }
 }
 
+function jobs(st0 = new Map(), action) {
+  switch (action.type) {
+    case 'ADD_JOBS':
+      let st1 = new Map(st0);
+      for (let job of action.data) {
+        st1.set(job.id, job);
+      }
+      return st1;
+    default:
+      return st0;
+  }
+}
+
+
 function new_timesheet(st0 = new Map(), action) {
   switch (action.type) {
     case 'SUBMIT_NEW_SHEET':
       console.log("timesheet", action.data)
-      let st1 = Object.assign({}, st0, action.data);
-      // let st1 = new Map(st0);
-      // for (let task of action.data) {
-      //   st1.set(task.id, task)
-      // }
-      return st1;
+      let index = Object.keys(action.data)[0];
+      if (st0[index] == undefined) {
+        return Object.assign({}, st0, action.data);
+      }
+      else {
+        let temp = st0[index];
+        temp = Object.assign({}, temp, action.data[index]);
+        return Object.assign({}, st0, { [index]: temp })
+      }
+    default:
+      return st0;
+  }
+}
+
+function aux_sheet(st0 = { date: null }, action) {
+  switch (action.type) {
+    case 'CHANGE_SHEET_DATE':
+      return Object.assign({}, st0, action.data)
     default:
       return st0;
   }
@@ -87,6 +102,7 @@ function forms(st0, action) {
   let reducer = combineReducers({
     new_timesheet,
     login,
+    aux_sheet
   });
   return reducer(st0, action);
 }
@@ -117,6 +133,8 @@ function root_reducer(st0, action) {
   let reducer = combineReducers({
     forms,
     users,
+    jobs,
+    timesheets,
     session,
   });
   return deepFreeze(reducer(st0, action));

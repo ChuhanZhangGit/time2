@@ -17,7 +17,7 @@ defmodule Time2Web.SessionController do
       resp = %{errors: ["Authentication Failed"]}
       conn
       |> put_resp_header("content-type", "application/json; charset=UTF-8")
-      |> send_resp(:unauthorized, Jason.encode!(resp))
+      |> send_resp(:unprocessable_entity, Jason.encode!(resp))
     end
   end
 end

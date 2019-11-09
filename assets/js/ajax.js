@@ -43,44 +43,56 @@ export function get(path) {
 //             });
 //         });
 // }
+export function list_jobs() {
+    get('/jobs')
+        .then((resp) => {
+            console.log("job list", resp);
+            store.dispatch({
+                type: 'ADD_JOBS',
+                data: resp.data,
+            });
+        });
+}
+
+export function sheet_list(id) {
+    get('/daysheets/' + id)
+        .then((resp) => {
+            console.log("sheet list", resp);
+            store.dispatch({
+                type: 'ADD_NEW_SHEET',
+                data: [resp.data],
+            });
+        });
+}
 
 export function sumbit_timesheet(form) {
     let state = store.getState();
-    console.log("state", state);
+    console.log("sumbit_timesheet state", state);
     let data = state.forms.new_timesheet;
 
-    if (data.file == null) {
-        return;
-    }
-
-    let reader = new FileReader();
-    reader.addEventListener("load", () => {
-        post('/daysheets', {
-            photo: {
-                desc: data.desc,
-                filename: data.file.name,
-                data: reader.result,
-                user_id: 1,
-            }
-        }).then((resp) => {
-            console.log(resp);
-            if (resp.data) {
+    post('/daysheets', {
+        daysheet:
+        {
+            date: state.forms.aux_sheet.date,
+            tasks: data
+        }
+    })
+        .then((resp) => {
+            console.log("response", resp);
+            if (resp.date) {
                 store.dispatch({
-                    type: 'ADD_PHOTOS',
-                    data: [resp.data],
+                    type: 'ADD_NEW_SHEET',
+                    data: [resp],
                 });
-                form.redirect('/daysheets/' + resp.data.id);
+                form.redirect('/listsheet/');
             }
             else {
                 store.dispatch({
-                    type: 'CHANGE_NEW_PHOTO',
+                    type: 'ERROR',
                     data: { errors: JSON.stringify(resp.errors) },
                 });
             }
         });
-    });
-
-    reader.readAsDataURL(data.file);
 }
 
 export function submit_login(form) {

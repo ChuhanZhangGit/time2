@@ -5,6 +5,7 @@ defmodule Time2Web.DaysheetController do
   alias Time2.Daysheets.Daysheet
 
   action_fallback Time2Web.FallbackController
+  plug Time2Web.Plugs.RequireAuth when action in [:create, :update, :delete]
 
   def index(conn, _params) do
     daysheets = Daysheets.list_daysheets()
@@ -12,7 +13,7 @@ defmodule Time2Web.DaysheetController do
   end
 
 
-    def update_sheet_param(daysheet_params, current_user) do
+  def update_sheet_param(daysheet_params, current_user) do
     daysheet_params
     |> Map.put("manager_id", current_user.manager_id)
     |> Map.put("worker_id", current_user.id) 
@@ -30,19 +31,26 @@ defmodule Time2Web.DaysheetController do
   def create(conn, %{"daysheet" => daysheet_params}) do
     # current user may be undefined
     current_user =  conn.assigns[:current_user]
+
     daysheet_params = daysheet_params
     |> update_sheet_param(current_user)
     |> filter_param(current_user)
 
+    IO.puts("asdfasdfasdf")
+    IO.inspect(daysheet_params)
+    
     case Daysheets.create_daysheet(daysheet_params) do
       {:ok, daysheet} ->
-      conn
-      |> put_status(:created)
-      |> put_resp_header("location", Routes.daysheet_path(conn, :show, daysheet))
-      |> render("show.json", daysheet: daysheet)
+        conn
+        |> put_status(:created)
+        |> put_resp_header("location", Routes.daysheet_path(conn, :show, daysheet))
+        |> send_resp(:created, Jason.encode!(daysheet_params))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
+        resp = %{errors: ["Create Timesheet Failed"]}
+        conn
+        |> put_resp_header("content-type", "application/json; charset=UTF-8")
+        |> send_resp(:failed, Jason.encode!(resp))
     end
   end
 

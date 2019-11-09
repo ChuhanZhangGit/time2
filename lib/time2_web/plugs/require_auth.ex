@@ -6,6 +6,8 @@ defmodule Time2Web.Plugs.RequireAuth do
   def init(args), do: args 
 
   def call(conn, _args) do
+    IO.puts("asdfsadfa")
+    IO.inspect(conn)
     token = List.first(get_req_header(conn, "x-auth"))
     case Phoenix.Token.verify(Time2Web.Endpoint, "session", token, max_age: 86400) do
       {:ok, user_id} ->
@@ -13,7 +15,7 @@ defmodule Time2Web.Plugs.RequireAuth do
       {:error, err} ->
         conn
         |> put_resp_header("content-type", "application/json; charset=UTF-8")
-        |> send_resp(:unprocessable_entity, Jason.encode!(%{"error" => err}))
+        |> send_resp(:unauthorized_user, Jason.encode!(%{"error" => err}))
         |> halt()
     end
   end

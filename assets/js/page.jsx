@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Switch, Route, NavLink, Link } from 'react-rou
 import { Navbar, Nav, Col } from 'react-bootstrap';
 import { Provider, connect } from 'react-redux';
 import NewTimesheet from './timesheet/new'
-
+import ShowTimesheet from './timesheet/show'
 import Login from './login';
 
 import store from './store';
@@ -49,7 +49,7 @@ function Page(props) {
             <Switch>
 
                 <Route exact path="/listsheet">
-                    <h1>Timsheet List</h1>
+                    <ShowTimesheet />
                 </Route>
                 <Route exact path="/newsheet">
                     <NewTimesheet />
@@ -75,6 +75,7 @@ let Session = connect(({ session }) => ({ session }))(({ session, dispatch }) =>
 
     if (session) {
         console.log("username", session.user_name)
+        console.log("session", session);
         return (
             <Nav>
                 <Nav.Item>
