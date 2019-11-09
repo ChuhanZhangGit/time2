@@ -6,7 +6,7 @@ defmodule Time2Web.TaskController do
 
   action_fallback Time2Web.FallbackController
 
-  plug Time2.Plugs.RequireAuth when action in [:create, :update, :delete]
+  plug Time2Web.Plugs.RequireAuth when action in [:create, :update, :delete]
 
   def index(conn, _params) do
     tasks = Tasks.list_tasks()
