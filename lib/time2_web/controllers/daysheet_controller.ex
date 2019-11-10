@@ -71,6 +71,7 @@ defmodule Time2Web.DaysheetController do
   # end
 
   def show(conn, %{"id" => id}) do
+    {id, _} = Integer.parse(id)
     daysheet = Daysheets.get_daysheet!(id)
     render(conn, "show.json", daysheet: daysheet)
   end
